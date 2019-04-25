@@ -32,8 +32,8 @@ from glob import glob
 from scipy import misc
 
 import numpy as np
-from tensorflow.contrib.keras.python.keras.preprocessing.image import Iterator
-from tensorflow.contrib.keras.python.keras import backend as K
+from tensorflow.keras.preprocessing.image import Iterator
+from tensorflow.keras import backend as K
 
 def preprocess_input(x):
     x = x/255.
@@ -109,16 +109,20 @@ class BatchIteratorSimple(Iterator):
         super(BatchIteratorSimple, self).__init__(self.n, batch_size, shuffle, seed)
 
 
-    def next(self):
+    def next(self, ia=None):
         """For python 2.x.
         Returns:
             The next batch.
         """
         # Keeps under lock only the mechanism which advances
         # the indexing of each batch.
-        with self.lock:
-          index_array, current_index, current_batch_size = next(
-              self.index_generator)
+        if ia is None:
+            with self.lock:
+                index_array, current_index, current_batch_size = next(
+                    self.index_generator)
+        else:
+            index_array = ia
+            current_batch_size = len(ia)
         # The transformation of images is not under thread lock
         # so it can be done in parallel
         
@@ -161,3 +165,6 @@ class BatchIteratorSimple(Iterator):
 
         else:
           return batch_x, batch_y
+
+    def _get_batches_of_transformed_samples(self, index_array):
+        return self.next(index_array)
