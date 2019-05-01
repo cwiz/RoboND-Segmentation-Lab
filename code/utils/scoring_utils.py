@@ -78,7 +78,7 @@ def score_run(gt_dir, pred_dir):
         pred_mask = (misc.imread(pred_files[e]) > 127).astype(np.int)
 
         if gt_mask.shape[0] != pred_mask.shape[0]:
-            gt_mask = misc.imresize(gt_mask, pred_mask.shape)
+            gt_mask = misc.imresize(gt_mask, pred_mask.shape, interp='nearest')
 
         for i in range(3):
             ious[i] += intersection_over_union(pred_mask[:,:,i], gt_mask[:,:,i])

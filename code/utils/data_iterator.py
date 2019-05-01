@@ -118,8 +118,8 @@ class BatchIteratorSimple(Iterator):
         # the indexing of each batch.
         if ia is None:
             with self.lock:
-                index_array, current_index, current_batch_size = next(
-                    self.index_generator)
+                index_array = next(self.index_generator)
+                current_batch_size = len(index_array)
         else:
             index_array = ia
             current_batch_size = len(ia)
@@ -166,5 +166,3 @@ class BatchIteratorSimple(Iterator):
         else:
           return batch_x, batch_y
 
-    def _get_batches_of_transformed_samples(self, index_array):
-        return self.next(index_array)
